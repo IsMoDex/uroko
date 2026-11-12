@@ -31,7 +31,7 @@ import { useEffect, useState } from 'react';
 import { Github, Star } from 'lucide-react';
 import { useI18n } from '@/lib/hooks/use-i18n';
 import { useWorkbenchShellExtensions } from '@/lib/workbench/shell-extensions';
-import { OPENMAIC_GITHUB_URL } from '@/lib/workbench/shell-links';
+import { UROKO_GITHUB_URL } from '@/lib/workbench/shell-links';
 import { GITHUB_STARS_ENDPOINT, formatStarCount } from '@/lib/workbench/github-stars';
 import { useBrand, useIsDesktop } from '@/lib/brand/brand-context';
 import { ProLaunchPanel, type PromptSeed } from '@/components/workbench/ProLaunchPanel';
@@ -126,7 +126,7 @@ export function WorkspaceHome({
                 {t('home.slogan')}
               </p>
               <a
-                href={OPENMAIC_GITHUB_URL}
+                href={UROKO_GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="pro-workspace-hero-github"

@@ -33,7 +33,7 @@ export async function renderReportShareImage(
   const printedDestination = destination ? reportShareDisplayUrl(destination) : '';
   const background = reportShareCampaign.backgrounds[theme];
   const [logo, qr, artwork] = await Promise.all([
-    loadImage('/openmaic-share-logo.png'),
+    loadImage('/uroko-mark.svg'),
     destination ? qrPngDataUrl(destination).then(loadImage) : null,
     background ? loadImage(background) : null,
   ]);

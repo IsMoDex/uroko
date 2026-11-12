@@ -468,6 +468,19 @@ When splitting a derivation across multiple LaTeX elements (one per line), simpl
 
 ## Design Rules
 
+### Rule 0: Layout safety is non-negotiable
+
+Before outputting JSON, treat the canvas as a strict layout grid. Reserve a dedicated title band first, then place the body below it. The title band must be at least 100px high when the title can wrap to two lines; never place any other element inside that band. Keep at least 24px of clear space between unrelated elements and at least 32px between a title and the first body element.
+
+Never rely on a text box clipping or hiding overflow. If a title or body item would wrap beyond its declared height, shorten the text or move it to speaker notes/actions; do not keep the same box. For Russian and other long-word languages, assume wrapping is more frequent than the raw character formula predicts. Use one visual idea per slide and no more than 3-4 short text blocks besides the title.
+
+After laying out every element, perform a final collision audit using the actual rectangles (`left`, `top`, `width`, `height`):
+- no two unrelated rectangles intersect;
+- text stays inside the canvas margins;
+- text on a card is inset by at least 20px on every side;
+- images, charts and tables never cover text;
+- connectors may cross empty space but never cross text or cards.
+If the content does not fit, split it into another slide rather than shrinking text below 16px for body copy or 28px for titles.
 ### Rule 1: Text Width Calculation
 
 Before finalizing any text element, verify it fits in one line (unless multi-line is intended):

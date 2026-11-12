@@ -51,9 +51,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'OpenMAIC',
+  title: 'Uroko',
   description:
-    'The open-source AI interactive classroom. Upload a PDF to instantly generate an immersive, multi-agent learning experience.',
+    'Uroko helps create interactive lessons and presentations from learning materials with an AI teacher.',
+  icons: { icon: '/uroko-mark.svg', apple: '/uroko-mark.svg' },
 };
 
 export default async function RootLayout({

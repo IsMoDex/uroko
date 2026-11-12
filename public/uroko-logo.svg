@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" role="img" aria-labelledby="title desc">
+  <title id="title">Uroko</title>
+  <desc id="desc">Uroko learning studio logo</desc>
+  <defs>
+    <linearGradient id="u" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(12 12)">
+    <path d="M78 4 142 41v74l-64 37-64-37V41L78 4Z" fill="none" stroke="url(#u)" stroke-width="12"/>
+    <path d="M78 37 112 57v42l-34 20-34-20V57l34-20Z" fill="#ccfbf1" stroke="#0f766e" stroke-width="8"/>
+    <path d="M78 37v82M44 57l68 42M112 57 44 99" fill="none" stroke="#0f766e" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="78" cy="37" r="7" fill="#f59e0b"/>
+  </g>
+  <text x="190" y="119" fill="#12343b" font-family="Inter,Segoe UI,sans-serif" font-size="92" font-weight="750" letter-spacing="-3">Uroko</text>
+</svg>

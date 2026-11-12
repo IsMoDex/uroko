@@ -18,7 +18,7 @@ async function fetchStars(): Promise<number | null> {
   try {
     const headers: Record<string, string> = {
       Accept: 'application/vnd.github+json',
-      'User-Agent': 'OpenMAIC',
+      'User-Agent': 'Uroko',
     };
     const token = process.env.GITHUB_TOKEN?.trim();
     if (token) headers.Authorization = `Bearer ${token}`;

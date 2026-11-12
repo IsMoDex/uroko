@@ -1,7 +1,7 @@
-import { OPENMAIC_GITHUB_URL } from '@/lib/workbench/shell-links';
+import { UROKO_GITHUB_URL } from '@/lib/workbench/shell-links';
 
 /** `owner/repo` of the project's repository, derived from its public URL. */
-export const OPENMAIC_GITHUB_REPO = new URL(OPENMAIC_GITHUB_URL).pathname.replace(/^\/|\/$/g, '');
+export const OPENMAIC_GITHUB_REPO = new URL(UROKO_GITHUB_URL).pathname.replace(/^\/|\/$/g, '');
 
 /** The route the home badge reads the star count from. */
 export const GITHUB_STARS_ENDPOINT = '/api/github-stars';

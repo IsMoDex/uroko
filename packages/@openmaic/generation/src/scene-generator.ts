@@ -874,6 +874,14 @@ async function generateSlideContent(
         : 0,
   })) as PPTElement[];
 
+  // Models are good at proposing a visual hierarchy but are not reliable at
+  // accounting for browser line wrapping.  Reconcile the declared text boxes
+  // and repair the most common collision: a wrapped title covering the first
+  // row of cards.  This is deliberately deterministic and runs before the
+  // scene is persisted, so the editor, playback and PPTX export see the same
+  // safe geometry.
+  const laidOutElements = normalizeSlideLayout(processedElements, log);
+
   // Process background
   let background: SlideBackground | undefined;
   if (generatedData.background) {
@@ -888,10 +896,103 @@ async function generateSlideContent(
   }
 
   return {
-    elements: processedElements,
+    elements: laidOutElements,
     background,
     remark: generatedData.remark || outline.description,
   };
+}
+
+const TEXT_HEIGHTS: Record<number, number[]> = {
+  14: [43, 64, 85, 106, 127],
+  16: [46, 70, 94, 118, 142],
+  18: [49, 76, 103, 130, 157],
+  20: [52, 82, 112, 142, 172],
+  24: [58, 94, 130, 166, 202],
+  28: [64, 106, 148, 190, 232],
+  32: [70, 118, 166, 214, 262],
+  36: [76, 130, 184, 238, 292],
+};
+
+function textPlainContent(content: string): string {
+  return content
+    .replace(/<br\s*\/?\s*>/gi, '\n')
+    .replace(/<\/p\s*>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .trim();
+}
+
+function declaredFontSize(content: string): number {
+  const match = content.match(/font-size\s*:\s*(\d+(?:\.\d+)?)px/i);
+  const value = match ? Number(match[1]) : 18;
+  return Math.max(14, Math.min(36, value));
+}
+
+function textSafeHeight(element: Extract<PPTElement, { type: 'text' }>): number {
+  const fontSize = declaredFontSize(element.content);
+  const nearest = Object.keys(TEXT_HEIGHTS)
+    .map(Number)
+    .sort((a, b) => Math.abs(a - fontSize) - Math.abs(b - fontSize))[0]!;
+  const contentWidth = Math.max(40, element.width - 20);
+  const charsPerLine = Math.max(6, Math.floor(contentWidth / fontSize));
+  const paragraphs = textPlainContent(element.content).split(/\n+/).filter(Boolean);
+  const lines = Math.min(
+    5,
+    Math.max(1, paragraphs.reduce((sum, paragraph) => sum + Math.ceil(paragraph.length / charsPerLine), 0)),
+  );
+  return TEXT_HEIGHTS[nearest]![lines - 1]!;
+}
+
+function simpleRange(element: Exclude<PPTElement, { type: 'line' }>) {
+  return {
+    minX: element.left,
+    maxX: element.left + element.width,
+    minY: element.top,
+    maxY: element.top + element.height,
+  };
+}
+
+function rangesOverlap(a: ReturnType<typeof simpleRange>, b: ReturnType<typeof simpleRange>, gap = 0) {
+  return a.minX < b.maxX - gap && a.maxX > b.minX + gap && a.minY < b.maxY - gap && a.maxY > b.minY + gap;
+}
+
+function contains(outer: ReturnType<typeof simpleRange>, inner: ReturnType<typeof simpleRange>, padding = 0) {
+  return (
+    outer.minX <= inner.minX - padding &&
+    outer.maxX >= inner.maxX + padding &&
+    outer.minY <= inner.minY - padding &&
+    outer.maxY >= inner.maxY + padding
+  );
+}
+
+function normalizeSlideLayout(elements: PPTElement[], log: GenerationLogger): PPTElement[] {
+  const result = elements.map((element) =>
+    element.type === 'text' ? { ...element, height: Math.max(element.height, textSafeHeight(element)) } : element,
+  );
+
+  // Move later independent blocks below an expanded title or another block.
+  // Shape/text pairs are intentional when the text is comfortably contained.
+  for (let i = 0; i < result.length; i += 1) {
+    const current = result[i]!;
+    if (current.type === 'line' || current.type === 'audio' || current.type === 'video') continue;
+    for (let j = i + 1; j < result.length; j += 1) {
+      const next = result[j]!;
+      if (next.type === 'line' || next.type === 'audio' || next.type === 'video') continue;
+      const currentRange = simpleRange(current);
+      const nextRange = simpleRange(next);
+      const intentionalPair =
+        (current.type === 'shape' && next.type === 'text' && contains(currentRange, nextRange, 8)) ||
+        (current.type === 'text' && next.type === 'shape' && contains(nextRange, currentRange, 8));
+      if (intentionalPair || !rangesOverlap(currentRange, nextRange, 4)) continue;
+
+      const shift = currentRange.maxY - nextRange.minY + 24;
+      if (shift <= 0 || next.top + shift + next.height > 512) continue;
+      result[j] = { ...next, top: Math.round(next.top + shift) } as PPTElement;
+      log.warn(`Adjusted overlapping slide element "${next.id}" down by ${Math.round(shift)}px`);
+    }
+  }
+  return result;
 }
 
 function findInvalidShapeRotation(elements: GeneratedSlideData['elements']): string | undefined {

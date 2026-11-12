@@ -25,10 +25,10 @@ export interface BrandConfig {
 
 /** The default brand: the product itself, with no vendor overrides. */
 export const DEFAULT_BRAND: BrandConfig = {
-  productName: 'OpenMAIC',
-  shortName: 'OpenMAIC',
-  logoSrc: '/logo-horizontal.png',
+  productName: 'Uroko',
+  shortName: 'Uroko',
+  logoSrc: '/uroko-logo.svg',
   logoHasWordmark: true,
-  markSrc: '/openmaic-mark.png',
-  themeColor: '#722ed1',
+  markSrc: '/uroko-mark.svg',
+  themeColor: '#0f766e',
 };

@@ -46,7 +46,7 @@ import {
   useWorkbenchShellExtensions,
   type WorkbenchShellMenuItem,
 } from '@/lib/workbench/shell-extensions';
-import { OPENMAIC_GITHUB_URL } from '@/lib/workbench/shell-links';
+import { UROKO_GITHUB_URL } from '@/lib/workbench/shell-links';
 import { docsHref } from '@/lib/docs-link';
 import { cn } from '@/lib/utils/cn';
 import {
@@ -542,7 +542,7 @@ function AccountMenu({
           </DropdownMenuItem>
           <DropdownMenuItem {...HOLD_FOCUS} asChild className="ws-menu-item">
             <a
-              href={OPENMAIC_GITHUB_URL}
+              href={UROKO_GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
               data-testid="workspace-account-github"
@@ -660,7 +660,7 @@ function AboutDialog({
             {t('workspace.account.aboutBody')}
           </DialogDescription>
           <a
-            href={OPENMAIC_GITHUB_URL}
+            href={UROKO_GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground/80 hover:bg-muted"
